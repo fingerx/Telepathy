@@ -1,4 +1,4 @@
-![Telepathy Logo](https://i.imgur.com/eUk2rmT.png)
+![Telepathy Logo](https://i.imgur.com/CWfzmVh.png)
 
 [![Build status](https://img.shields.io/appveyor/ci/vis2k73562/telepathy.svg)](https://ci.appveyor.com/project/vis2k73562/telepathy/)
 [![AppVeyor tests branch](https://img.shields.io/appveyor/tests/vis2k73562/telepathy.svg)](https://ci.appveyor.com/project/vis2k73562/telepathy/branch/master/tests)
@@ -41,20 +41,20 @@ while (server.GetNextMessage(out msg))
 {
     switch (msg.eventType)
     {
-        case Telepathy.EventType.Connect:
+        case Telepathy.EventType.Connected:
             Console.WriteLine(msg.connectionId + " Connected");
             break;
         case Telepathy.EventType.Data:
             Console.WriteLine(msg.connectionId + " Data: " + BitConverter.ToString(msg.data));
             break;
-        case Telepathy.EventType.Disconnect:
+        case Telepathy.EventType.Disconnected:
             Console.WriteLine(msg.connectionId + " Disconnected");
             break;
     }
 }
 
 // send a message to client with connectionId = 0 (first one)
-server.Send(0, new byte[]{0x42, 0x1337});
+server.Send(0, new byte[]{0x42, 0x13, 0x37});
 
 // stop the server when you don't need it anymore
 server.Stop();
@@ -63,7 +63,7 @@ server.Stop();
 # Using the Telepathy Client
 ```C#
 // create and connect the client
-Telepathy.Client Client = new Telepathy.Client();
+Telepathy.Client client = new Telepathy.Client();
 client.Connect("localhost", 1337);
 
 // grab all new messages. do this in your Update loop.
@@ -72,13 +72,13 @@ while (client.GetNextMessage(out msg))
 {
     switch (msg.eventType)
     {
-        case Telepathy.EventType.Connect:
+        case Telepathy.EventType.Connected:
             Console.WriteLine("Connected");
             break;
         case Telepathy.EventType.Data:
             Console.WriteLine("Data: " + BitConverter.ToString(msg.data));
             break;
-        case Telepathy.EventType.Disconnect:
+        case Telepathy.EventType.Disconnected:
             Console.WriteLine("Disconnected");
             break;
     }
@@ -128,13 +128,13 @@ public class SimpleExample : MonoBehaviour
                 switch (msg.eventType)
                 {
                     case Telepathy.EventType.Connected:
-                        Console.WriteLine("Connected");
+                        Debug.Log("Connected");
                         break;
                     case Telepathy.EventType.Data:
-                        Console.WriteLine("Data: " + BitConverter.ToString(msg.data));
+                        Debug.Log("Data: " + BitConverter.ToString(msg.data));
                         break;
                     case Telepathy.EventType.Disconnected:
-                        Console.WriteLine("Disconnected");
+                        Debug.Log("Disconnected");
                         break;
                 }
             }
@@ -153,13 +153,13 @@ public class SimpleExample : MonoBehaviour
                 switch (msg.eventType)
                 {
                     case Telepathy.EventType.Connected:
-                        Console.WriteLine(msg.connectionId + " Connected");
+                        Debug.Log(msg.connectionId + " Connected");
                         break;
                     case Telepathy.EventType.Data:
-                        Console.WriteLine(msg.connectionId + " Data: " + BitConverter.ToString(msg.data));
+                        Debug.Log(msg.connectionId + " Data: " + BitConverter.ToString(msg.data));
                         break;
                     case Telepathy.EventType.Disconnected:
-                        Console.WriteLine(msg.connectionId + " Disconnected");
+                        Debug.Log(msg.connectionId + " Disconnected");
                         break;
                 }
             }
@@ -205,13 +205,12 @@ Then build it, start the server in the build and the client in the Editor and pr
 # Benchmarks
 **Real World**<br/>
 Telepathy is constantly tested in production with [uMMORPG](https://www.assetstore.unity3d.com/#!/content/51212).
-We [recently tested](https://docs.google.com/document/d/e/2PACX-1vQqf_iqOLlBRTUqqyor_OUx_rHlYx-SYvZWMvHGuLIuRuxJ-qX3s8JzrrBB5vxDdGfl-HhYZW3g5lLW/pub#h.h4wha2mpetsc) 100+ players all broadcasting to each other in the worst case scenario, without issues.
+We [recently tested](https://docs.google.com/document/d/e/2PACX-1vQqf_iqOLlBRTUqqyor_OUx_rHlYx-SYvZWMvHGuLIuRuxJ-qX3s8JzrrBB5vxDdGfl-HhYZW3g5lLW/pub#h.h4wha2mpetsc) 200+ players all broadcasting to each other in the worst case scenario, without issues.
 
 We had to stop the test because we didn't have more players to spawn clients.<br/>
-The next huge test will come soon...
 
 **Connections Test**<br/>
-We also test only the raw Telepathy library by spawing 1 server and 1000 clients, each client sending 100 bytes 14 times per second and the server echoing the same message back to each client. This test should be a decent example for an MMORPG scenario and allows us to test if the raw Telepathy library can handle it.
+We also test only the raw Telepathy library by spawning 1 server and 1000 clients, each client sending 100 bytes 14 times per second and the server echoing the same message back to each client. This test should be a decent example for an MMORPG scenario and allows us to test if the raw Telepathy library can handle it.
 
 Test Computer: 2015 Macbook Pro with a 2,2 GHz Intel Core i7 processor.<br/>
 Test Results:<br/>
